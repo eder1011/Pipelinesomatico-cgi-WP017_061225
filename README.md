@@ -61,7 +61,106 @@ r.json()
 
 
 
+**Status do Job ID**
 
+```Python
+import requests
+job_id = "20c01a79adf6a9dc4c77"
+
+headers = {'Authorization': 'eder.fersou@gmail.com e0122907ce53686b5d72'}
+r = requests.get('https://www.cancergenomeinterpreter.org/api/v1/%s' % job_id, headers=headers)
+r.json()
+```
+
+**output:**
+```
+{'status': 'Done',
+ 'metadata': {'id': '20c01a79adf6a9dc4c77',
+  'user': 'eder.fersou@gmail.com',
+  'title': 'Somatic MF WP017',
+  'cancertype': 'HEMATO',
+  'reference': 'hg38',
+  'dataset': 'input.tsv',
+  'date': '2025-12-06 18:01:39'}}
+  ```
+
+**Log ID**
+
+
+```Python
+import requests
+job_id = "20c01a79adf6a9dc4c77"
+
+headers = {'Authorization': 'eder.fersou@gmail.com e0122907ce53686b5d72'}
+payload={'action':'logs'}
+r = requests.get('https://www.cancergenomeinterpreter.org/api/v1/%s' % job_id, headers=headers, params=payload)
+r.json()
+
+```
+
+**output:**
+```
+
+
+{'status': 'Done',
+ 'logs': ['# cgi analyze input.tsv -c HEMATO -g hg38',
+  '2025-12-06 19:01:43,108 INFO     Parsing input01.tsv\n',
+  '2025-12-06 19:01:43,117 WARNING  Skipping variant with invalid ref/alt: "C/T,A" | Alteration ID: input01_19\n',
+  '2025-12-06 19:01:43,117 WARNING  Skipping variant with invalid ref/alt: "-/,GTT,GTT" | Alteration ID: input01_21\n',
+  '2025-12-06 19:01:46,666 INFO     Running VEP\n',
+  '2025-12-06 19:01:48,997 INFO     Check cancer genes and consensus roles\n',
+  '2025-12-06 19:01:49,081 INFO     Annotate BoostDM mutations\n',
+  '2025-12-06 19:01:49,183 INFO     Annotate OncodriveMUT mutations\n',
+  '2025-12-06 19:01:56,049 INFO     Annotate validated oncogenic mutations\n',
+  '2025-12-06 19:01:56,196 INFO     Check oncogenic classification\n',
+  '2025-12-06 19:01:56,260 INFO     Matching biomarkers\n',
+  '2025-12-06 19:01:56,382 INFO     Prescription finished\n',
+  '2025-12-06 19:01:56,393 INFO     Aggregate metrics\n',
+  '2025-12-06 19:01:59,661 INFO     Compress output files\n',
+  '2025-12-06 19:01:59,708 INFO     Analysis done\n']}
+```
+
+**Download dos resultados**
+```
+%%bash
+#criar o diretorio com o ID da amostra dentro de results
+mkdir -p results/WP017
+
+```
+
+```Python
+import requests
+job_id ="20c01a79adf6a9dc4c77"
+
+headers = {'Authorization': 'eder.fersou@gmail.com e0122907ce53686b5d72'}
+payload={'action':'download'}
+r = requests.get('https://www.cancergenomeinterpreter.org/api/v1/%s' % job_id, headers=headers, params=payload)
+with open('/content/results/WP017/WP017-cgi.zip', 'wb') as fd:
+    fd.write(r._content)
+
+```
+
+**Descompactar o zip com os resultados **
+
+
+```
+%%bash
+unzip -o /content/results/WP017/W0P17-cgi.zip -d /content/results/WP017/
+```
+
+**output**
+```
+Archive:  /content/results/WP017/W0P17-cgi.zip
+  inflating: /content/results/WP017/alterations.tsv  
+  inflating: /content/results/WP017/biomarkers.tsv  
+  inflating: /content/results/WP017/input01.tsv  
+  inflating: /content/results/WP017/summary.txt  
+```
+
+```Python
+import pandas as pd
+pd.read_csv('/content/results/WP017/alterations.tsv',sep='\t',index_col=False, engine= 'python')
+```
 
 
 **output:**
